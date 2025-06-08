@@ -80,6 +80,10 @@ fig.add_trace(go.Scatter(
     x=TIME_VECTOR, y=displacement_t, mode='lines', name='Смещение (мм)', yaxis='y3'
 ))
 
+fig.add_trace(go.Scatter(
+    x=TIME_VECTOR, y=coil_magnetic_field_t, mode='lines', name='Магнитное поле (Тл)', yaxis='y4'
+))
+
 MAX_VOLTAGE = 20.0
 MAX_CURRENT = MAX_VOLTAGE / SPEAKER_RESISTANCE
 MAX_FORCE = PERMANENT_MAGNET_FIELD * (MAX_CURRENT) * COIL_LENGTH
@@ -107,6 +111,13 @@ fig.update_layout(
         side='right',
         range=[-MAX_DISPLACEMENT * 1.1, MAX_DISPLACEMENT * 1.1]
     ),
+    yaxis4=dict(
+        title=dict(text='Магнитное поле (Тл)', font=dict(color="#d62728")),
+        tickfont=dict(color="#d62728"),
+        overlaying='y',
+        side='right',
+        range=[-0.1, 0.1]
+    ),
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     margin=dict(l=50, r=100, t=50, b=50),
     height=500,
@@ -118,7 +129,7 @@ fig.update_xaxes(range=[0, 0.05])
 st.plotly_chart(fig, use_container_width=True)
 
 st.header("Ключевые расчетные показатели")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 peak_current = voltage_amplitude / SPEAKER_RESISTANCE
 peak_force = PERMANENT_MAGNET_FIELD * peak_current * COIL_LENGTH
 
@@ -130,6 +141,10 @@ with col2:
 
 with col3:
     st.metric("Пиковое смещение диффузора", f"{abs(peak_force * DISPLACEMENT_FACTOR):.2f} мм")
+
+with col4:
+    peak_magnetic_field = MU_0 * COIL_TURNS_PER_METER * peak_current
+    st.metric("Пиковое магнитное поле катушки", f"{peak_magnetic_field:.6f} Тл")
 
 with st.expander("Показать используемые формулы"):
     st.write("В модели используются следующие упрощенные соотношения:")
@@ -154,4 +169,4 @@ with st.expander("Показать используемые формулы"):
     st.write(r"В данной модели смещение считается прямо пропорциональным силе для наглядности.")
 
 st.markdown("---")
-st.write("© Замальдинов Роман M3208. Упрощенная модель для образовательных целей.")
+st.write("© Замальдинов Роман M3208.")
